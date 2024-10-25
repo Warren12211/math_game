@@ -1,6 +1,3 @@
-
-
-
 function QuestionSetGenerator(op, max_int, num_questions) {
 
     class Question {
@@ -14,7 +11,7 @@ function QuestionSetGenerator(op, max_int, num_questions) {
     let question_array = [];
 
     switch (op) {
-        case "add": // Fixed the case from "op" to "add"
+        case "add": 
             let q_str_list = [];
             let i = 0;
             while (i < num_questions) {
@@ -26,112 +23,178 @@ function QuestionSetGenerator(op, max_int, num_questions) {
                 if (!q_str_list.includes(q_str)) {
                     q_str_list.push(q_str);
 
-                    question_array.push(new Question(q_str, String(num1 + num2))); // Added 'new' to create an instance of Question
+                    question_array.push(new Question(q_str, String(num1 + num2))); 
                     i += 1;
-                } else {
-                    continue;
                 }
             }
-            break; // Added break to avoid falling through the switch cases
+            break; 
     }
-
     return question_array;
 }
 
-// function AskQuestions(list, practice = false) {
-//     let correct = 0;
-//     let incorrect = [];
+// Sets the number of questions
+let num_of_questions = 7;
 
-//     if (practice == false) {
-//         for (let i = 0; i < list.length; i++) { // Fixed `length(list)` to `list.length`
-//             let current_question = list[i];
-
-//             let user_answer = prompt(`What is ${current_question.string}?`, 0);
-
-//             if (user_answer == current_question.answer) {
-//                 correct += 1;
-//             } else {
-//                 incorrect.push(list[i]);
-//             }
-//         }
-//     } else {
-//         while (list.length != 0) { // Fixed `length(list)` to `list.length`
-
-//             let random_number = Math.floor(Math.random() * list.length);
-//             let current_question = list[random_number]; // Moved this line before `prompt`
-
-//             let user_answer = prompt(`What is ${current_question.string}?`, 0);
-
-//             if (user_answer == current_question.answer) {
-
-//                 alert("Correct!");
-
-//                 list.splice(list.indexOf(current_question), 1); // Added 1 to splice correctly
-
-//             } else {
-//                 alert(`Incorrect. The correct answer is ${current_question.answer}.`);
-
-//                 current_question.attempts += 1;
-
-//                 if (current_question.attempts == 3) {
-//                     alert("You got this wrong too many times.");
-
-//                     list.splice(list.indexOf(current_question), 1); // Added 1 to splice correctly
-//                 }
-//             }
-//         }
-//     }
-//     return [incorrect, correct]; // Changed return format to array
-// }
-
-
-let num_of_questions = 5
-let max_int = 10
+// The max int is the largest number you will see in the problems
+let max_int = 10;
 
 // Generate a starter list
-let question_list = QuestionSetGenerator("add", num_of_questions, max_int)
+let question_list = QuestionSetGenerator("add", max_int, num_of_questions);
 
 // Sets it to show first question
 let question_num = 0;
 
-// Puts the question and question number on the screen
-function showQuestion() {
-    document.getElementById("question").innerText = question_list[question_num].string;
-    document.getElementById("question_num").innerText = `Question ${question_num + 1} of ${question_list.length}`;
-}
-showQuestion()
+// Sets vars to each HTML element
+let question = document.getElementById("question")
+let question_count = document.getElementById("question_num")
+let submit = document.getElementById("submit_button")
+let input = document.getElementById("input_box")
 
-// Goes back a question (if not question 1), and updates screen
-function backQuestion() {
-    if (question_num != 0) {
-        question_num -= 1;
+// Sets the status of the button to submit to start
+let button_status = "submit"
+
+let user_answer = 0
+let correct = 0
+let incorrect = 0
+
+
+// Stores current question in a var
+let current_question = question_list[question_num];
+
+// Sets the text for the first question in the question, the count, and the button
+function UpdateQuestion() {
+    current_question = question_list[question_num];
+
+    question.innerHTML = current_question.string;
+    // question_count.innerHTML = `Question ${question_num + 1} of ${question_list.length}`;
+    question_count.innerHTML = `Question ${question_num + 1} out of ${question_list.length}`
+    button_status = "submit"
+    submit.innerHTML = "Submit"
+}
+
+
+function ToggleAllChildElements(parent, toggle) {
+    // Shows or hides all child elements based on the toggle value
+
+    // Gets an array of all of the child elements in the parent
+    parent = document.getElementById("question_elements")
+
+    // For each child in the parent element
+    for (i=0; i < parent.children.length; i++) {
+
+        // Gets the child
+        child = parent.children[i]
+
+        // If toggle is 0, hide everything
+        if (toggle == 0) {
+            child.style.display = "none"
+        }
+
+        // If toggle is 1, show everything
+        if (toggle == 1) {
+            child.style.display = "block"
+        }
+
     }
-    showQuestion()
 }
 
-// Goes forward a question (if not last question), and updates screen
-function nextQuestion() {
-    if (question_num != question_list.length - 1) {
-        question_num += 1;
+
+
+/* 
+    The button is set to the initial status, which is the submit stage
+    It shows the first question on the screen.
+
+    When the button is pressed, if its the last question,
+    displays the percentage of the ones correctly answered
+
+    When the button is pressed during the submit stage,
+    it takes the current text in the input box, and compares
+    it to the correct answer, and shows the score on the screen
+    replacing the question 
+
+    The button is now in the continue mode, and when the button is pressed
+    change the question num by one, and update the whole question 
+    with the new one
+
+
+*/
+
+// Sets up the first question
+UpdateQuestion()
+
+function submitAnswer() {
+    
+
+    // If its the last question
+    if (question_num === (question_list.length - 1)){
+
+        // Clears everything off the screen
+        parent = document.getElementById("question_elements")
+        ToggleAllChildElements(parent, 0)
+
+        // Shows the question element
+        question.style.display = "block"
+
+        // Gets the percentage
+        let percentage = Math.round((100 / question_list.length) * correct)
+
+        // Displays the percentage
+        question.innerHTML = `You got ${percentage}%.`
+
+    // If its not the last question
+    } else {
+
+        // When the button is pressed in submit mode
+        if (button_status === "submit") {
+
+            // Gets the user answer
+            user_answer = input.value;
+
+            // If the user answer equals the answer to the current question
+            if (user_answer === current_question.answer) {
+
+                // Adds one to the correct var
+                correct += 1
+
+                // Tells user that they are correct
+                question.innerHTML = "Correct"
+
+                // Update the question num
+                question_num += 1
+
+                // Update the question elements
+                UpdateQuestion()
+
+            // If the user answer does not equal the correct answer
+            } else {
+
+                // Adds one to the incorrect var
+                incorrect += 1
+
+                // Tells user they are wrong, and tells them correct answer
+                question.innerHTML = `Incorrect. The correct answer is ${current_question.answer}.`
+
+                // Sets the button text to "Continue"
+                submit.innerHTML = "Continue"
+
+                // Sets the button status to continue
+                button_status = "continue"
+            }
+
+
+        // If the button is in the continue status
+        } else {
+
+            // Updates the question num
+            question_num += 1
+
+            // Updates the question elements
+            UpdateQuestion()             
+            
+        }
+
     }
-    showQuestion()
+
+// Clears the input value
+input.value = ""
 }
-
-// Regenerates a list, resets screen
-function newList() {
-    question_list = QuestionSetGenerator("add", num_of_questions, max_int)
-    question_num = 0
-    showQuestion()
-}
-
-
-// let [incorrectly_answered, num_correct] = AskQuestions(question_list);
-
-// if (incorrectly_answered.length != 0) { // Fixed `length(incorrectly_answered != 0)` to `incorrectly_answered.length != 0`
-
-//     let ask_practice = prompt("Would you like to practice the questions you got incorrect? [y/n]", "n").toLowerCase();
-
-//     if (ask_practice == "y") {
-//         AskQuestions(incorrectly_answered, practice = true);
-//     }
-// }
