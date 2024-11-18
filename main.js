@@ -4,14 +4,13 @@ function QuestionSetGenerator(op, max_int, num_questions) {
         constructor(string, answer) {
             this.string = string;
             this.answer = answer;
-            this.attempts = 0;
         }
     }
 
     let question_array = [];
 
     switch (op) {
-        case "add": 
+        case "add":
             let q_str_list = [];
             let i = 0;
             while (i < num_questions) {
@@ -23,17 +22,17 @@ function QuestionSetGenerator(op, max_int, num_questions) {
                 if (!q_str_list.includes(q_str)) {
                     q_str_list.push(q_str);
 
-                    question_array.push(new Question(q_str, String(num1 + num2))); 
+                    question_array.push(new Question(q_str, String(num1 + num2)));
                     i += 1;
                 }
             }
-            break; 
+            break;
     }
     return question_array;
 }
 
 // Sets the number of questions
-let num_of_questions = 7;
+let num_of_questions = 5;
 
 // The max int is the largest number you will see in the problems
 let max_int = 10;
@@ -76,22 +75,22 @@ function UpdateQuestion() {
 function ToggleAllChildElements(parent, toggle) {
     // Shows or hides all child elements based on the toggle value
 
-    // Gets an array of all of the child elements in the parent
+    // Gets an array of all the child elements in the parent
     parent = document.getElementById("question_elements")
 
     // For each child in the parent element
-    for (i=0; i < parent.children.length; i++) {
+    for (let i=0; i < parent.children.length; i++) {
 
         // Gets the child
-        child = parent.children[i]
+        let child = parent.children[i]
 
         // If toggle is 0, hide everything
-        if (toggle == 0) {
+        if (toggle === 0) {
             child.style.display = "none"
         }
 
         // If toggle is 1, show everything
-        if (toggle == 1) {
+        if (toggle === 1) {
             child.style.display = "block"
         }
 
@@ -100,37 +99,40 @@ function ToggleAllChildElements(parent, toggle) {
 
 
 
-/* 
-    The button is set to the initial status, which is the submit stage
-    It shows the first question on the screen.
 
-    When the button is pressed, if its the last question,
-    displays the percentage of the ones correctly answered
-
-    When the button is pressed during the submit stage,
-    it takes the current text in the input box, and compares
-    it to the correct answer, and shows the score on the screen
-    replacing the question 
-
-    The button is now in the continue mode, and when the button is pressed
-    change the question num by one, and update the whole question 
-    with the new one
-
-
-*/
 
 // Sets up the first question
 UpdateQuestion()
 
 function submitAnswer() {
-    
 
-    // If its the last question
+    /*
+        The button is set to the initial status, which is the submit stage
+        It shows the first question on the screen.
+
+        When the button is pressed, if it's the last question,
+        displays the percentage of the ones correctly answered
+
+        When the button is pressed during the submit stage,
+        it takes the current text in the input box, and compares
+        it to the correct answer, and shows the score on the screen
+        replacing the question
+
+        The button is now in the continue mode, and when the button is pressed
+        change the question num by one, and update the whole question
+        with the new one
+
+
+    */
+
+    // If it's the last question
     if (question_num === (question_list.length - 1)){
 
         // Clears everything off the screen
         parent = document.getElementById("question_elements")
         ToggleAllChildElements(parent, 0)
+
+        correct += 1
 
         // Shows the question element
         question.style.display = "block"
@@ -141,7 +143,7 @@ function submitAnswer() {
         // Displays the percentage
         question.innerHTML = `You got ${percentage}%.`
 
-    // If its not the last question
+        // If it's not the last question
     } else {
 
         // When the button is pressed in submit mode
@@ -165,7 +167,7 @@ function submitAnswer() {
                 // Update the question elements
                 UpdateQuestion()
 
-            // If the user answer does not equal the correct answer
+                // If the user answer does not equal the correct answer
             } else {
 
                 // Adds one to the incorrect var
@@ -182,19 +184,19 @@ function submitAnswer() {
             }
 
 
-        // If the button is in the continue status
+            // If the button is in the continue status
         } else {
 
             // Updates the question num
             question_num += 1
 
             // Updates the question elements
-            UpdateQuestion()             
-            
+            UpdateQuestion()
+
         }
 
     }
 
 // Clears the input value
-input.value = ""
+    input.value = ""
 }
